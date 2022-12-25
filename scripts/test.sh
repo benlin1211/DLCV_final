@@ -32,15 +32,19 @@ python -m main \
     --val_batch_size $BATCH_SIZE \
     --scannet_path $DATA_ROOT \
     --stat_freq 100 \
-    --visualize False \
     --visualize_path  $LOG_DIR/visualize \
-    --num_gpu 2 \
+    --num_gpu 1 \
     --balanced_category_sampling True \
+    --resume $LOG_DIR \
+    --is_train False \
+	--test_original_pointcloud True \
+	--save_prediction True \
+    --visualize True\
     $ARGS \
     2>&1 | tee -a "$LOG"
-    --resume $LOG_DIR \
 
+#    
 #    --weights $PRETRAINED_WEIGHTS \
 
 
-# source scripts/train_models.sh Res16UNet34C 2 toyexample --seed=1211 
+# source scripts/test.sh Res16UNet34C 1 toyexample --seed=1211 

@@ -412,13 +412,19 @@ class cfl_collate_fn_factory:
                 break
             coords_batch.append(torch.from_numpy(coords[batch_id]).int())
             feats_batch.append(torch.from_numpy(feats[batch_id]))
-            labels_batch.append(torch.from_numpy(labels[batch_id]).int())
+            if None not in labels:
+                labels_batch.append(torch.from_numpy(labels[batch_id]).int())
+            else:
+                labels_batch = None
             scene_names_batch.append(scene_names[batch_id])
 
             batch_id += 1
 
         # Concatenate all lists
-        coords_batch, feats_batch, labels_batch = ME.utils.sparse_collate(coords_batch, feats_batch, labels_batch)
+        if labels_batch is None:
+            coords_batch, feats_batch = ME.utils.sparse_collate(coords_batch, feats_batch, labels_batch)
+        else:
+            coords_batch, feats_batch, labels_batch = ME.utils.sparse_collate(coords_batch, feats_batch, labels_batch)
         return coords_batch, feats_batch.float(), labels_batch, scene_names_batch
 
 

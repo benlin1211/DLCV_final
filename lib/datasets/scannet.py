@@ -1,3 +1,4 @@
+## ScannetVoxelizationDataset: inherit to VoxelizationDatasetBase
 import glob
 import logging
 import os
@@ -68,6 +69,8 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
         data_root = config.scannet_path
         if phase not in [DatasetPhase.Train, DatasetPhase.TrainVal]:
             self.CLIP_BOUND = self.TEST_CLIP_BOUND
+        print(data_root)
+        print(os.path.join(data_root, self.DATA_PATH_FILE[phase]))
         data_paths = read_txt(os.path.join(data_root, self.DATA_PATH_FILE[phase]))
         logging.info('Loading {}: {}'.format(self.__class__.__name__, self.DATA_PATH_FILE[phase]))
         super().__init__(
@@ -319,8 +322,8 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
         return coords, feats, labels
 
     def __getitem__(self, index):
-
-        coords, feats, labels, instance_ids, scene_name = self.load_ply(index)
+        
+        coords, feats, labels, instance_ids, scene_name = self.load_ply(index)        
         scene_name = scene_name.split('/')[-1].split('.')[0]
 
         # Downsample the pointcloud with finer voxel size before transformation for memory and speed
@@ -356,10 +359,11 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
             coords, feats, labels = self.target_transform(coords, feats, labels)
         if self.IGNORE_LABELS is not None:
             mapper = lambda x: self.label_map[x]
-            if labels.ndim == 1:
-                labels = np.vectorize(mapper)(labels)
-            else:
-                labels[:, 0] = np.vectorize(mapper)(labels[:, 0])
+            if labels is not None:
+                if labels.ndim == 1:
+                    labels = np.vectorize(mapper)(labels)
+                else:
+                    labels[:, 0] = np.vectorize(mapper)(labels[:, 0])
 
         # Use coordinate features if config is set
         if self.AUGMENT_COORDS_TO_FEATS:
@@ -388,7 +392,7 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
              pointcloud[:, 6:]))
         return pointcloud
 
-    def test_pointcloud(self, pred_dir, num_labels):
+    def test_pointcloud(self, pred_dir, num_labels, mode="val"):
 
         print('Running full pointcloud evaluation.')
         eval_path = os.path.join(pred_dir, 'fulleval')
@@ -397,6 +401,7 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
         # Test independently for each room.
         sys.setrecursionlimit(100000)  # Increase recursion limit for k-d tree.
         hist = np.zeros((num_labels, num_labels))
+        # print("hello",glob.glob(pred_dir))
         for i, data_path in enumerate(self.data_paths):
             room_id = self.get_output_id(i)
             pred = np.load(glob.glob(pred_dir + '/*pred*%04d.npy' % i)[0])
@@ -415,7 +420,8 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
             fullply_f = self.data_root / data_path
             query_pointcloud = read_plyfile(fullply_f)
             query_xyz = query_pointcloud[:, :3]
-            query_label = query_pointcloud[:, -1]
+            if mode!="test":
+                query_label = query_pointcloud[:, -1]
             # Run test for each room.
             pred_tree = spatial.KDTree(pred[:, :3], leafsize=500)
             _, result = pred_tree.query(query_xyz)
@@ -430,13 +436,16 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
             # Evaluate IoU.
             if self.IGNORE_LABELS is not None:
                 ptc_pred = np.array([self.label_map[x] for x in ptc_pred], dtype=np.int)
-                query_label = np.array([self.label_map[x] for x in query_label], dtype=np.int)
-            hist += fast_hist(ptc_pred, query_label, num_labels)
-        ious = per_class_iu(hist) * 100
-        print('mIoU: ' + str(np.nanmean(ious)) + '\n'
-                                                 'Class names: ' + ', '.join(self.CLASS_LABELS) + '\n'
-                                                                                                  'IoU: ' + ', '.join(
-            np.round(ious, 2).astype(str)))
+                if mode!="test":
+                    query_label = np.array([self.label_map[x] for x in query_label], dtype=np.int)
+                    hist += fast_hist(ptc_pred, query_label, num_labels)
+        
+        if mode!="test":
+            ious = per_class_iu(hist) * 100
+            print('mIoU: ' + str(np.nanmean(ious)) + '\n'
+                                                    'Class names: ' + ', '.join(self.CLASS_LABELS) + '\n'
+                                                                                                    'IoU: ' + ', '.join(
+                np.round(ious, 2).astype(str)))
 
 class ScannetVoxelization2cmDataset(ScannetVoxelizationDataset):
     VOXEL_SIZE = 0.02

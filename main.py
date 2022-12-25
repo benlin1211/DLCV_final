@@ -9,7 +9,8 @@ import numpy as np
 from pytorch_lightning import Trainer, Callback
 from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
 import pytorch_lightning as pl
-from pytorch_lightning.plugins import DDPPlugin
+# from pytorch_lightning.plugins import DDPPlugin
+from pytorch_lightning.strategies import DDPStrategy
 import random
 import string
 
@@ -190,7 +191,7 @@ def main():
             time.sleep(10)
 
     trainer = Trainer(max_epochs=config.max_epoch, logger=loggers,
-                      devices=num_devices, accelerator="gpu", strategy=DDPPlugin(find_unused_parameters=True),
+                      devices=num_devices, accelerator="gpu", strategy=DDPStrategy(find_unused_parameters=True),
                       num_sanity_val_steps=4, accumulate_grad_batches=1,
                       callbacks=[*checkpoint_callbacks, CleanCacheCallback()])
 
@@ -198,6 +199,7 @@ def main():
     if config.is_train:
         trainer.fit(pl_module, ckpt_path=config.resume)
     else:
+        # breakpoint()
         trainer.test(pl_module, ckpt_path=config.resume)
 
 

@@ -146,7 +146,10 @@ class Voxelizer:
             transforms += [(M_v, M_r)]
 
         if num_pairs == 1:  # Simply return if simple input is required
-            return coords_aug[unique_map], feats[unique_map], labels[unique_map], (M_v, M_r)
+            if labels is not None:
+                return coords_aug[unique_map], feats[unique_map], labels[unique_map], (M_v, M_r)
+            else:
+                return coords_aug[unique_map], feats[unique_map], None, (M_v, M_r)
 
         else:  # Magic indexing for finding correspondences
             u_map0 = unique_maps[0]

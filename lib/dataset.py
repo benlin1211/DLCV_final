@@ -181,7 +181,10 @@ class VoxelizationDatasetBase(DictDataset, ABC):
         data = plydata.elements[0].data
         coords = np.array([data['x'], data['y'], data['z']], dtype=np.float32).T
         feats = np.array([data['red'], data['green'], data['blue']], dtype=np.float32).T
-        labels = np.array(data['label'], dtype=np.int32)
+        try:  # for train/val
+            labels = np.array(data['label'], dtype=np.int32)
+        except:  # for test
+            labels = None
 
         try:  # for scenes
             instances = np.array(data['instance_id'], dtype=np.int32)

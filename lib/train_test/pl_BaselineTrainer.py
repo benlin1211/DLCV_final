@@ -51,23 +51,23 @@ class BaselineTrainerModule(LightningModule):
         self.head_losses, self.common_losses, self.tail_losses = AverageMeter(ignore_index=config.ignore_label), AverageMeter(ignore_index=config.ignore_label), AverageMeter(ignore_index=config.ignore_label)
 
         # Logging the precisions = scores
-        self.scores = Precision(num_classes=self.num_labels, average='macro')
-        self.head_scores = Precision(num_classes=self.num_labels, average='none')
-        self.common_scores = Precision(num_classes=self.num_labels, average='none')
-        self.tail_scores = Precision(num_classes=self.num_labels, average='none')
+        self.scores = Precision(task="multiclass", num_classes=self.num_labels, average='macro')
+        self.head_scores = Precision(task="multiclass", num_classes=self.num_labels, average='none')
+        self.common_scores = Precision(task="multiclass", num_classes=self.num_labels, average='none')
+        self.tail_scores = Precision(task="multiclass", num_classes=self.num_labels, average='none')
 
         # Logging the accuracies = scores
-        self.accuracy = Recall(num_classes=self.num_labels, average='macro')
-        self.head_accuracy = Recall(num_classes=self.num_labels, average='none')
-        self.common_accuracy = Recall(num_classes=self.num_labels, average='none')
-        self.tail_accuracy = Recall(num_classes=self.num_labels, average='none')
+        self.accuracy = Recall(task="multiclass", num_classes=self.num_labels, average='macro')
+        self.head_accuracy = Recall(task="multiclass", num_classes=self.num_labels, average='none')
+        self.common_accuracy = Recall(task="multiclass", num_classes=self.num_labels, average='none')
+        self.tail_accuracy = Recall(task="multiclass", num_classes=self.num_labels, average='none')
 
         # Log IoU scores
-        self.iou_scores = JaccardIndex(num_classes=self.num_labels, average='none')
+        self.iou_scores = JaccardIndex(task="multiclass", num_classes=self.num_labels, average='none')
 
         # Also tacking care of average precision - from PR curve
         self.aps = torch.zeros((0, self.num_labels))
-        self.average_precision = AveragePrecision(num_classes=self.num_labels, average=None)
+        self.average_precision = AveragePrecision(task="multiclass", num_classes=self.num_labels, average=None)
 
         # Other accumulators for logging statistics
         self.val_iteration = 0
@@ -179,7 +179,10 @@ class BaselineTrainerModule(LightningModule):
                 class_ids = np.arange(self.num_labels)
 
                 label_mapper = lambda t: self.dataset.inverse_label_map[t]
-                target = outputs['final_target'].cpu().apply_(label_mapper)
+                if outputs['final_target'] is not None:
+                    target = outputs['final_target'].cpu().apply_(label_mapper)
+                else:
+                    target = None
                 pred = outputs['final_pred'].cpu().apply_(label_mapper)
                 invalid_parents = target == self.config.ignore_label
                 pred[invalid_parents] = self.config.ignore_label
@@ -299,7 +302,8 @@ class BaselineTrainerModule(LightningModule):
             input[:, :3] = input[:, :3] / 255. - 0.5
         sinput = SparseTensor(input, coords)
         inputs = (sinput,) if self.config.wrapper_type == 'None' else (sinput, coords, color)
-        target = target.long()
+        if target is not None:
+            target = target.long()
 
         # Feed forward
         soutput, feature_maps = self(*inputs)
@@ -321,65 +325,70 @@ class BaselineTrainerModule(LightningModule):
         pred = soutput.F.max(1)[1].detach()
         prob = torch.nn.functional.softmax(soutput.F, dim=1).detach()
 
-        # Calculate embedding and/or prediction loss
-        if self.config.use_embedding_loss:
-            if self.config.embedding_loss_type == 'l2':
-                # Feature clusters drove by external centroids
-                emb_loss = embedding_loss(embedding=feature_maps, target=target,
-                                          feature_clusters=self.dataset.loaded_text_features,
-                                          criterion=self.embedding_criterion, config=self.config) * self.config.embedding_loss_lambda
-            else:
-                # Contrastive
+        if target is not None:
+            # Calculate embedding and/or prediction loss
+            if self.config.use_embedding_loss:
+                if self.config.embedding_loss_type == 'l2':
+                    # Feature clusters drove by external centroids
+                    emb_loss = embedding_loss(embedding=feature_maps, target=target,
+                                            feature_clusters=self.dataset.loaded_text_features,
+                                            criterion=self.embedding_criterion, config=self.config) * self.config.embedding_loss_lambda
+                else:
+                    # Contrastive
+                    if self.config.use_embedding_loss == 'both':
+                        emb_loss, pos_loss, neg_loss = self.embedding_criterion(feature_maps.F, target, dataset=self.dataset, preds=pred)  # with correct predictions
+                    else:
+                        emb_loss = self.embedding_criterion(feature_maps, target, dataset=self.dataset)  # using all samples for negatives ass no valid prediction is learnt
+
+                self.embed_losses.update(nanmean_t(emb_loss), target.size(0))
+                loss = emb_loss
+
+                # Have both if requested
                 if self.config.use_embedding_loss == 'both':
-                    emb_loss, pos_loss, neg_loss = self.embedding_criterion(feature_maps.F, target, dataset=self.dataset, preds=pred)  # with correct predictions
-                else:
-                    emb_loss = self.embedding_criterion(feature_maps, target, dataset=self.dataset)  # using all samples for negatives ass no valid prediction is learnt
+                    pred_loss = self.criterion(soutput.F, target)
+                    if loss.shape[0] != pred_loss.shape[0]:
+                        loss[target != self.config.ignore_label] += pred_loss
+                    else:
+                        loss += pred_loss
 
-            self.embed_losses.update(nanmean_t(emb_loss), target.size(0))
-            loss = emb_loss
+            else:  # or only prediction if none
+                loss = self.criterion(soutput.F, target)
 
-            # Have both if requested
-            if self.config.use_embedding_loss == 'both':
-                pred_loss = self.criterion(soutput.F, target)
-                if loss.shape[0] != pred_loss.shape[0]:
-                    loss[target != self.config.ignore_label] += pred_loss
-                else:
-                    loss += pred_loss
+            split_items = None
+            if self.config.balanced_category_sampling:
+                loss, split_losses, split_items = sample_categories_for_balancing(loss, self.config, self.dataset,
+                                                                                targets=target, outputs=soutput.F)
+                self.head_losses(nanmean_t(split_losses[0]), split_losses[0].size(0))
+                self.common_losses(nanmean_t(split_losses[1]), split_losses[1].size(0))
+                self.tail_losses(nanmean_t(split_losses[2]), split_losses[2].size(0))
 
-        else:  # or only prediction if none
-            loss = self.criterion(soutput.F, target)
+            # Evaluate prediction
+            if split_items is not None:
+                valid_pred = pred[target != self.config.ignore_label]
+                valid_target = target[target != self.config.ignore_label]
+                if split_items[:, 0].sum() > 0:
+                    self.head_scores(valid_pred[split_items[:, 0]], valid_target[split_items[:, 0]])
+                    self.head_accuracy(valid_pred[split_items[:, 0]], valid_target[split_items[:, 0]])
+                if split_items[:, 1].sum() > 0:
+                    self.common_scores(valid_pred[split_items[:, 1]], valid_target[split_items[:, 1]])
+                    self.common_accuracy(valid_pred[split_items[:, 1]], valid_target[split_items[:, 1]])
+                if split_items[:, 2].sum() > 0:
+                    self.tail_scores(valid_pred[split_items[:, 2]], valid_target[split_items[:, 2]])
+                    self.tail_accuracy(valid_pred[split_items[:, 2]], valid_target[split_items[:, 2]])
 
-        split_items = None
-        if self.config.balanced_category_sampling:
-            loss, split_losses, split_items = sample_categories_for_balancing(loss, self.config, self.dataset,
-                                                                              targets=target, outputs=soutput.F)
-            self.head_losses(nanmean_t(split_losses[0]), split_losses[0].size(0))
-            self.common_losses(nanmean_t(split_losses[1]), split_losses[1].size(0))
-            self.tail_losses(nanmean_t(split_losses[2]), split_losses[2].size(0))
-
-        # Evaluate prediction
-        if split_items is not None:
-            valid_pred = pred[target != self.config.ignore_label]
-            valid_target = target[target != self.config.ignore_label]
-            if split_items[:, 0].sum() > 0:
-                self.head_scores(valid_pred[split_items[:, 0]], valid_target[split_items[:, 0]])
-                self.head_accuracy(valid_pred[split_items[:, 0]], valid_target[split_items[:, 0]])
-            if split_items[:, 1].sum() > 0:
-                self.common_scores(valid_pred[split_items[:, 1]], valid_target[split_items[:, 1]])
-                self.common_accuracy(valid_pred[split_items[:, 1]], valid_target[split_items[:, 1]])
-            if split_items[:, 2].sum() > 0:
-                self.tail_scores(valid_pred[split_items[:, 2]], valid_target[split_items[:, 2]])
-                self.tail_accuracy(valid_pred[split_items[:, 2]], valid_target[split_items[:, 2]])
-
-        if valid_target.sum() > 0:
-            self.losses(loss.clone().detach(), target.size(0))
-            self.scores(pred[valid_mask], target[valid_mask])
-            self.accuracy(pred[valid_mask], target[valid_mask])
-            self.iou_scores(pred[valid_mask], target[valid_mask])
-
-            self.aps = torch.vstack((self.aps, torch.tensor(self.average_precision(prob, target), device='cpu')))
-            self.average_precision.reset()
-
+            if valid_target.sum() > 0:
+                self.losses(loss.clone().detach(), target.size(0))
+                self.scores(pred[valid_mask], target[valid_mask])
+                self.accuracy(pred[valid_mask], target[valid_mask])
+                self.iou_scores(pred[valid_mask], target[valid_mask])
+                # print("1", prob.shape, torch.sum(1*(prob<0)))
+                # print("2", target.shape, target)
+                # breakpoint()
+                # print(self.average_precision(prob, target))
+                self.aps = torch.vstack((self.aps, torch.tensor(self.average_precision(prob, target), device='cpu')))
+                self.average_precision.reset()
+        else:
+            loss = None
         prediction_dict = {'final_pred': pred, 'final_target': target,
                            'coords': sinput.C, 'colors': sinput.F,
                            'output_features': prob}
@@ -390,7 +399,24 @@ class BaselineTrainerModule(LightningModule):
         return {**prediction_dict, **loss_dict, **visualize_dict}
 
     def test_dataloader(self):
-        return self.val_dataloader()
+        
+        test_data_loader = initialize_data_loader( ## 
+            self.DatasetClass,
+            self.config,
+            num_workers=self.config.num_val_workers,
+            phase=self.config.test_phase, ##
+            augment_data=False,
+            shuffle=False,
+            repeat=False,
+            batch_size=self.config.val_batch_size,
+            limit_numpoints=False)
+
+        self.dataset = test_data_loader.dataset ##
+        self.init_criterions()
+
+        self.validation_max_iter = len(test_data_loader) ##
+
+        return test_data_loader
 
     def on_test_start(self):
         self.target_epoch_freqs = {}

@@ -207,9 +207,9 @@ dependencies:
     - notebook-shim==0.1.0
     - oauthlib==3.2.0
     - omegaconf==2.2.2
-    - open3d==0.15.2
+    - open3d==0.15.2 # 0.13.0
     - pathtools==0.1.2
-    - pg-op==0.0.0
+    - pg-op==0.0.0 # 
     - pillow==9.2.0
     - promise==2.3
     - protobuf==3.19.4

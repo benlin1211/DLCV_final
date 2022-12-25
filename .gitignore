@@ -7,3 +7,8 @@ wandb/
 notebooks/
 output/*.csv
 .DS_Store
+dataset/
+*.ply
+*.ckpt
+*.txt
+*.npy

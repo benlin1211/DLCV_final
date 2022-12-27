@@ -36,15 +36,15 @@ If you found this work helpful for your research, please cite our paper:
 ### Data preprocess
 Please create instances ply files before your training.
 
-"""
+``` 
 python get_train_instances.py
-"""
+``` 
 
 You can check if you have all the feature data in feature data.
 
-"""
+``` 
 python pkl_info.py
-"""
+``` 
 
 
 

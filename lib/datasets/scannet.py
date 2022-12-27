@@ -191,10 +191,13 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
             inst_coords, inst_feats, inst_labels, instance_ids, _ = self.load_ply_w_path(file, scene_name)
 
             # Add augmentation with attributes
+            # TODO second dimension label is for self supervised learning??
             if self.config.instance_augmentation is not None:
                 inst_labels = np.hstack((inst_labels[:, None], np.zeros_like(inst_labels)[:, None]))  # have it with all zeros, we will augment in latent space after encoding
             if self.config.instance_augmentation == 'raw':
                 inst_coords, inst_feats, inst_labels = self.augment_instances(inst_coords, inst_feats, inst_labels, instance_ids) # do the augmentation here
+                # remove second dimension label. (for the project)
+                inst_labels = inst_labels[:, 0]
 
             # Voxelize instance too
             inst_coords, inst_feats, inst_labels, inst_vox_transform = self.voxelizer.voxelize(
@@ -352,6 +355,7 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
             labels = np.hstack((labels[:, None], np.zeros_like(labels)[:, None]))
             if self.config.instance_augmentation == 'raw':
                 coords, feats, labels = self.augment_instances(coords, feats, labels, instance_ids)
+                labels = labels[:, 0]
 
         # Add balanced instances
         if self.config.sample_tail_instances and self.augment_data:

@@ -11,10 +11,10 @@ export ARGS=$4
 
 export WEIGHTS_SUFFIX=$5
 
-export DATA_ROOT="/home/pywu/LanguageGroundedSemseg/scannet_200"
+export DATA_ROOT="/home/pywu/final-project-challenge-2-peiyuanwu/scannet_200"
 # export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
-export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/balance_True_v3.ckpt"
-export OUTPUT_DIR_ROOT="/home/pywu/LanguageGroundedSemseg/output"
+export PRETRAINED_WEIGHTS="/home/pywu/final-project-challenge-2-peiyuanwu/pre_train/balance_True_v3.ckpt"
+export OUTPUT_DIR_ROOT="/home/pywu/final-project-challenge-2-peiyuanwu/output"
 
 export TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 export LOG_DIR=$OUTPUT_DIR_ROOT/$DATASET/$MODEL-$SUFFIX
@@ -39,6 +39,7 @@ python -m main \
     --balanced_category_sampling True \
     --loss_type=weighted_ce \
     --instance_sampling_weights "feature_data/common_tail_split_inst_sampling_weights.pkl" \
+    --instance_augmentation 'raw' \
     --weights $PRETRAINED_WEIGHTS \
     --resume $LOG_DIR \
     $ARGS \

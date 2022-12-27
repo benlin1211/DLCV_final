@@ -32,6 +32,21 @@ If you found this work helpful for your research, please cite our paper:
     year={2022}
 }
 ```  
+# Run:
+### Data preprocess
+Please create instances ply files before your training.
+
+"""
+python get_train_instances.py
+"""
+
+You can check if you have all the feature data in feature data.
+
+"""
+python pkl_info.py
+"""
+
+
 
 ### Installation
 The codebase was developed and tested on Ubuntu 20.04, with various GPU versions *[RTX_2080, RTX_3060, RXT_3090, RXT_A6000]* and NVCC 11.x

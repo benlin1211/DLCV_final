@@ -48,6 +48,12 @@ command to cuild the whole environment.
   sudo reboot
   cd third_party/pointnet2 && python setup.py install
 ```
+#### Inference Command
+
+```sh
+bash train.sh <Path to train_data folder> <Path to train.txt folder> 
+bash inference.sh <Path to test_data folder> <Path to test.txt folder> <Path to output .txt file>
+```
 
 
 #### Pretraining Command
@@ -60,13 +66,6 @@ command to cuild the whole environment.
 
 ```sh
   source
-```
-
-#### Inference Command
-
-```sh
-bash train.sh <Path to train_data folder> <Path to train.txt folder> 
-bash inference.sh <Path to test_data folder> <Path to test.txt folder> <Path to output .txt file>
 ```
 
 ## Reference

@@ -14,6 +14,8 @@ we follow the work of the Language-Grounded 3D Semantic Segmentation model.
   robustness of feature extraction from 3D images and adopts the 
   weighted Focal loss to relieve the imbalance of data distribution.
 
+# How to run your code?
+
 ## Reproduce Guideline
 
 #### Build Enviroment
@@ -47,6 +49,7 @@ command to cuild the whole environment.
   cd third_party/pointnet2 && python setup.py install
 ```
 
+
 #### Pretraining Command
 
 ```sh
@@ -62,7 +65,8 @@ command to cuild the whole environment.
 #### Inference Command
 
 ```sh
-  source
+bash train.sh <Path to train_data folder> <Path to train.txt folder> 
+bash inference.sh <Path to test_data folder> <Path to test.txt folder> <Path to output .txt file>
 ```
 
 ## Reference

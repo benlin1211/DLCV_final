@@ -49,9 +49,9 @@ python -m main \
 # source scripts/test_weight_and_scale.sh Res16UNet34C 1 weight_and_scale --seed=1211 
 
 # cd ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-weight_and_scale/visualize/fulleval
-# zip submit_wb30.zip *.txt
-# cp ./submit_wb30.zip ../../../../../..
-# rm -rf ./submit_wb30.zip
+# zip submit_wb250.zip *.txt
+# cp ./submit_wb250.zip ../../../../../..
+# rm -rf ./submit_wb250.zip
 # cd ../../../../..
 
 # scp ./submit.zip pywu@140.112.18.221:/home/pywu/zhongwei/

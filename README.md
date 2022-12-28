@@ -44,7 +44,7 @@ command to cuild the whole environment.
   # IF YOUR ENVIROMENT DOESN'T HAVE nvidia-driver-510, YOU HAVE TO RUN THE FOLLOWING COMMANDS.
   sudo apt-get install nvidia-driver-510
   sudo reboot
-  cd third_party/pointnet2 && python setup.py install (TO BE CHECKED.)
+  cd third_party/pointnet2 && python setup.py install
 ```
 
 #### Pretraining Command

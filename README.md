@@ -59,6 +59,12 @@ command to cuild the whole environment.
   source
 ```
 
+#### Inference Command
+
+```sh
+  source
+```
+
 ## Reference
 
  - [LanguageGroundedSemseg](https://github.com/RozDavid/LanguageGroundedSemseg)

@@ -11,12 +11,12 @@ export ARGS=$4
 
 export WEIGHTS_SUFFIX=$5
 
-export DATA_ROOT=$6
-export TRAIN_TXT=$7
-# export DATA_ROOT="./final-project-challenge-2-peiyuanwu/scannet_200"
+# export DATA_ROOT=$6
+# export TRAIN_TXT=$7
+export DATA_ROOT="./scannet_200"
 # export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
-export PRETRAINED_WEIGHTS="./final-project-challenge-2-peiyuanwu/pre_train/balance_True_v3.ckpt"
-export OUTPUT_DIR_ROOT="./final-project-challenge-2-peiyuanwu/output"
+export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"
+export OUTPUT_DIR_ROOT="./output"
 
 export TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 export LOG_DIR=$OUTPUT_DIR_ROOT/$DATASET/$MODEL-$SUFFIX
@@ -46,7 +46,9 @@ python -m main \
     2>&1 | tee -a "$LOG"
 
 # sample_tail+weighted_ce
-# source scripts/train_models_sample_tail.sh Res16UNet34C 4 sample_tail --seed=1211 "./final-project-challenge-2-peiyuanwu/scannet_200" "./final-project-challenge-2-peiyuanwu/scannet_200/train.txt"  
+# source scripts/train_models_sample_tail.sh Res16UNet34C 4 sample_tail --seed=1211 \
+# "./final-project-challenge-2-peiyuanwu/scannet_200"  \
+# . 
 
 # NO --instance_augmentation=raw ? multi-target not supported at /opt/conda/conda-bld/pytorch_1623448278899/work/aten/src/THCUNN/generic/ClassNLLCriterion.cu:15
 # --sample_tail_instances True \ V

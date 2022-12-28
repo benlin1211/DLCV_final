@@ -59,8 +59,8 @@ def voting(numbers):
     max_count = counts.most_common(1)[0][1]
     out = [value for value, count in counts.most_common() if count == max_count]
     if len(out) > 1:
-        if len(out) == 2:
-            print(out)
+        # if len(out) == 2:
+        #     print(out)
         out = [random.choice(out)]
     return out
 
@@ -81,7 +81,7 @@ if __name__=="__main__":
 
     random.seed(1211)
     filenames, num_files = read_path("./scannet_200/test.txt")
-    txt_paths = ["./submit_tail_continue_001/","./submit_tail6033_002/", "./toy2_003/"]
+    txt_paths = ["./submit_tail_continue_001/","./submit_tail6033_002/", "./submit_250" , "./submission_005/", "./toy2_003/"] 
     outpath = "./ensemble"
     os.makedirs(outpath, exist_ok=True)
 

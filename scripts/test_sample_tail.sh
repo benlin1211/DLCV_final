@@ -11,8 +11,12 @@ export ARGS=$4
 
 export WEIGHTS_SUFFIX=$5
 
-export DATA_ROOT="/home/pywu/final-project-challenge-2-peiyuanwu/scannet_200"
-export OUTPUT_DIR_ROOT="/home/pywu/final-project-challenge-2-peiyuanwu/output"
+# export DATA_ROOT=$6
+# export TRAIN_TXT=$7
+export DATA_ROOT="./scannet_200"
+# export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
+export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"
+export OUTPUT_DIR_ROOT="./output"
 
 export TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 export LOG_DIR=$OUTPUT_DIR_ROOT/$DATASET/$MODEL-$SUFFIX
@@ -34,7 +38,7 @@ python -m main \
     --visualize_path  $LOG_DIR/visualize \
     --num_gpu 1 \
     --balanced_category_sampling True \
-    --loss_type=cross_entropy \
+    --loss_type=weighted_ce \
     --resume $LOG_DIR \
     --is_train False \
 	--test_original_pointcloud True \
@@ -51,9 +55,9 @@ python -m main \
 
 
 # cd ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval
-# zip submit_yslee.zip *.txt
-# cp ./submit_yslee.zip ../../../../../..
-# rm -rf ./submit_yslee.zip
+# zip submit_250.zip *.txt
+# cp ./submit_250.zip ../../../../../..
+# rm -rf ./submit_250.zip
 # cd ../../../../..
 
 # scp ./submit.zip pywu@140.112.18.221:/home/pywu/zhongwei/

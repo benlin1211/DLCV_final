@@ -32,6 +32,33 @@ If you found this work helpful for your research, please cite our paper:
     year={2022}
 }
 ```  
+# Run:
+### Data preprocess
+Please create instances ply files before your training by running:
+
+``` 
+python get_train_instances.py
+``` 
+
+You can check if you have all the feature data in feature data by running:
+
+``` 
+python pkl_info.py
+``` 
+
+You can split your valid data by running this code. This will select the scene with tail class for validation. (but it is still in train)
+
+``` 
+python select_tail_as_valid.py
+``` 
+
+You can generate your own class occurance frequency by running:
+
+``` 
+python compute_freq.py
+``` 
+
+
 
 ### Installation
 The codebase was developed and tested on Ubuntu 20.04, with various GPU versions *[RTX_2080, RTX_3060, RXT_3090, RXT_A6000]* and NVCC 11.x

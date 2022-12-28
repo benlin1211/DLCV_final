@@ -3,17 +3,22 @@ import numpy as np
 from tqdm import tqdm, trange
 from collections import Counter
 from tqdm import tqdm
+import random
 
+random.seed(1211)
 
 # read result for a txt file
 def read_txt(path):
     preds = []
     with open(path, 'rb') as f:
         lines = f.readlines()
-
+        # i=0
         for p in lines:
             p = int(str(p, encoding="utf-8").rstrip('\n'))
             preds.append(p)
+            # i+=1
+            # if i>10:
+            #     break
 
     return preds
 
@@ -22,12 +27,14 @@ def read_path(path):
     filenames = []
     with open(path, 'rb') as f:
         lines = f.readlines()
-
+        # i=0
         for line in lines:
             line = str(line, encoding="utf-8").rstrip('\n')
             line = line.split("/")[1].split(".")[0] + ".txt"
             filenames.append(line)
-
+            # i+=1
+            # if i>5:
+            #     break
     return filenames, len(filenames)
 
 # read results for a folder
@@ -52,6 +59,8 @@ def voting(numbers):
     counts = Counter(numbers)
     max_count = counts.most_common(1)[0][1]
     out = [value for value, count in counts.most_common() if count == max_count]
+    if len(out) > 1:
+        out = [random.choice(out)]
     return out
 
 # def most_frequent(List):
@@ -70,7 +79,7 @@ def voting(numbers):
 if __name__=="__main__":
     
     filenames, num_files = read_path("./scannet_200/test.txt")
-    txt_paths = ["./submit_tail_continue_001/","./submit_tail6033_002/", ]
+    txt_paths = ["./submit_tail_continue_001/","./submit_tail6033_002/", "./toy2_003/"]
     outpath = "./ensemble"
     os.makedirs(outpath, exist_ok=True)
 
@@ -101,7 +110,7 @@ if __name__=="__main__":
                 # print(len(vote_box))
 
             p = voting(vote_box)
-            # print(vote_box, "=>", p)
+            print(vote_box, "=>", p)
             final_preds.append(p)
         final_pred_list.append(final_preds)
 

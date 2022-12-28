@@ -34,7 +34,7 @@ python -m main \
     --visualize_path  $LOG_DIR/visualize \
     --num_gpu 1 \
     --balanced_category_sampling True \
-    --loss_type=cross_entropy \
+    --loss_type=weighted_ce \
     --resume $LOG_DIR \
     --is_train False \
 	--test_original_pointcloud True \
@@ -46,14 +46,12 @@ python -m main \
 #    --weights $PRETRAINED_WEIGHTS \
 #    --sample_tail_instances True \
 
-# source scripts/test_sample_tail.sh Res16UNet34C 1 sample_tail --seed=1211 
-# source scripts/test_sample_tail.sh Res16UNet34C 1 CE_Aug --seed=1211 
+# source scripts/test_weight_and_scale.sh Res16UNet34C 1 weight_and_scale --seed=1211 
 
-
-# cd ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval
-# zip submit_yslee.zip *.txt
-# cp ./submit_yslee.zip ../../../../../..
-# rm -rf ./submit_yslee.zip
+# cd ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-weight_and_scale/visualize/fulleval
+# zip submit_wb30.zip *.txt
+# cp ./submit_wb30.zip ../../../../../..
+# rm -rf ./submit_wb30.zip
 # cd ../../../../..
 
 # scp ./submit.zip pywu@140.112.18.221:/home/pywu/zhongwei/

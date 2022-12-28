@@ -39,7 +39,7 @@ python -m main \
     --sample_tail_instances True \
     --balanced_category_sampling True \
     --loss_type=weighted_ce \
-    --instance_sampling_weights "feature_data/common_double_tail_split_inst_sampling_weights.pkl" \
+    --instance_sampling_weights "feature_data/common_tail_split_inst_sampling_weights.pkl" \
     --instance_augmentation 'raw' \
     --weights $PRETRAINED_WEIGHTS \
     --resume $LOG_DIR \

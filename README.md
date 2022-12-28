@@ -55,7 +55,34 @@ bash train.sh <Path to train_data folder> <Path to train.txt folder>
 bash inference.sh <Path to test_data folder> <Path to test.txt folder> <Path to output .txt file>
 ```
 
+
 ## Train
+
+
+#### Data preprocess
+Please create instances ply files before your training by running:
+
+``` 
+python get_train_instances.py
+``` 
+
+You can check if you have all the feature data in feature data by running:
+
+``` 
+python pkl_info.py
+``` 
+
+You can split your valid data by running this code. This will select the scene with tail class for validation. (but it is still in train)
+
+``` 
+python select_tail_as_valid.py
+``` 
+
+You can generate your own class occurance frequency by running:
+
+``` 
+python compute_freq.py
+``` 
 
 #### Pretraining Command
 

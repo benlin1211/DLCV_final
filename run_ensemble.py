@@ -5,7 +5,6 @@ from collections import Counter
 from tqdm import tqdm
 import random
 
-random.seed(1211)
 
 # read result for a txt file
 def read_txt(path):
@@ -60,6 +59,8 @@ def voting(numbers):
     max_count = counts.most_common(1)[0][1]
     out = [value for value, count in counts.most_common() if count == max_count]
     if len(out) > 1:
+        if len(out) == 2:
+            print(out)
         out = [random.choice(out)]
     return out
 
@@ -77,16 +78,16 @@ def voting(numbers):
 #     return max(set(lst), key=lst.count)
 
 if __name__=="__main__":
-    
+
+    random.seed(1211)
     filenames, num_files = read_path("./scannet_200/test.txt")
     txt_paths = ["./submit_tail_continue_001/","./submit_tail6033_002/", "./toy2_003/"]
     outpath = "./ensemble"
     os.makedirs(outpath, exist_ok=True)
 
     elective = []
-
-    for txt_path in txt_paths:
-        print(f"Loading txts from file {txt_path}")
+    for i, txt_path in enumerate(txt_paths):
+        print(f"Loading txts from directory ({i+1}/{len(txt_paths)}) {txt_path} ")
         pred_list, num_list = get_pred(txt_path, filenames)
         elective.append( pred_list )
 
@@ -114,7 +115,7 @@ if __name__=="__main__":
             final_preds.append(p)
         final_pred_list.append(final_preds)
 
-    print("Saving result txts...")
+    print(f"Saving result txt at directory {outpath}")
     for i, filename in enumerate(tqdm(filenames)):
         final_preds = np.array(final_pred_list[i])
         # print(final_preds)

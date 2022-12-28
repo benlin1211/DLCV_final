@@ -76,7 +76,7 @@ if __name__=="__main__":
 
     output_path_all = "./scannet_200/train/train_instances/"
 
-    data_root = "/home/pywu/LanguageGroundedSemseg/scannet_200"
+    data_root = "/home/pywu/final-project-challenge-2-peiyuanwu/scannet_200"
     data_path_all = read_txt(os.path.join(data_root, 'train.txt'))
 
     # create_instance_ply(data_root, data_path_train, output_path_train)

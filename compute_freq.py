@@ -32,7 +32,7 @@ for label_name in TAIL_CATS_SCANNET_200:
     label_id = mapping[label_name]
     weight_tail[label_id] = 0.0
 
-def compute_instance_freq(data_root, data_paths, output_path, dump_head=False, dump_common=True, dump_tail=True):
+def compute_instance_freq(data_root, data_paths, output_path, dump_head=False, dump_common=True, dump_tail=True, double_tail=False):
     
     pbar = tqdm(data_paths)
     tail_class = VALID_CLASS_IDS_200
@@ -54,18 +54,21 @@ def compute_instance_freq(data_root, data_paths, output_path, dump_head=False, d
                 label_id = mapping[label_name]
                 ids = np.where(query_label==label_id)
                 weight_commom[label_id] += len(ids[0]) 
+               
         if dump_tail:
             for label_name in TAIL_CATS_SCANNET_200:
                 label_id = mapping[label_name]
                 ids = np.where(query_label==label_id)
                 weight_tail[label_id] += len(ids[0])
+                if double_tail:
+                    weight_tail[label_id] += len(ids[0])
 
     weight_final = {}
     weight_final.update(weight_head)
     weight_final.update(weight_commom)
     weight_final.update(weight_tail)
 
-    save_as = os.path.join(output_path, "./common_tail_split_inst_sampling_weights.pkl")
+    save_as = os.path.join(output_path, "./common_double_tail_split_inst_sampling_weights.pkl")
     with open(save_as, 'wb') as f:
         pickle.dump(weight_final, f)
     
@@ -75,10 +78,11 @@ if __name__=="__main__":
     output_path = "./scannet_200/feature_data/"
     os.makedirs(output_path, exist_ok=True)
 
-    data_root = "/home/pywu/LanguageGroundedSemseg/scannet_200"
+    data_root = "./scannet_200"
     data_path_all = read_txt(os.path.join(data_root, 'train.txt'))
 
     # create_instance_ply(data_root, data_path_train, output_path_train)
     # create_instance_ply(data_root, data_path_val, output_path_val)
     compute_instance_freq(data_root, data_path_all, output_path, 
-                          dump_head=False, dump_common=True, dump_tail=True)
+                          dump_head=False, dump_common=True, dump_tail=True,
+                          double_tail=True)

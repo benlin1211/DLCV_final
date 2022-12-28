@@ -13,7 +13,8 @@ export WEIGHTS_SUFFIX=$5
 
 export DATA_ROOT="/home/pywu/final-project-challenge-2-peiyuanwu/scannet_200"
 # export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
-export PRETRAINED_WEIGHTS="/home/pywu/final-project-challenge-2-peiyuanwu/pre_train/balance_True_v3.ckpt"
+# export PRETRAINED_WEIGHTS="/home/pywu/final-project-challenge-2-peiyuanwu/pre_train/balance_True_v3.ckpt"
+export PRETRAINED_WEIGHTS="/home/pywu/final-project-challenge-2-peiyuanwu/output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/checkpoint-val_miou=60.69-step=25270.ckpt"
 export OUTPUT_DIR_ROOT="/home/pywu/final-project-challenge-2-peiyuanwu/output"
 
 export TIME=$(date +"%Y-%m-%d_%H-%M-%S")
@@ -38,7 +39,7 @@ python -m main \
     --sample_tail_instances True \
     --balanced_category_sampling True \
     --loss_type=weighted_ce \
-    --instance_sampling_weights "feature_data/tail_split_inst_sampling_weights.pkl" \
+    --instance_sampling_weights "feature_data/common_double_tail_split_inst_sampling_weights.pkl" \
     --instance_augmentation 'raw' \
     --weights $PRETRAINED_WEIGHTS \
     --resume $LOG_DIR \
@@ -46,14 +47,6 @@ python -m main \
     2>&1 | tee -a "$LOG"
 
 # sample_tail+weighted_ce
-# 改--instance_sampling_weights "feature_data/common_tail_split_inst_sampling_weights.pkl" \
-# source scripts/train_weight_and_scale.sh Res16UNet34C 4 weight_and_scale --seed=1211 
-
-# 改--instance_sampling_weights "feature_data/tail_split_inst_sampling_weights.pkl" \
-# source scripts/train_weight_and_scale.sh Res16UNet34C 4 weight_and_scale_only_tail --seed=1211 
+# source scripts/train_weight_and_scale_tail_continue.sh Res16UNet34C 4 tail_continue --seed=1211 
 
 
-
-# NO --instance_augmentation=raw ? multi-target not supported at /opt/conda/conda-bld/pytorch_1623448278899/work/aten/src/THCUNN/generic/ClassNLLCriterion.cu:15
-# --sample_tail_instances True \ V
-# ./common_tail_split_inst_sampling_weights.pkl

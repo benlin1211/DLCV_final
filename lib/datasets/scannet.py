@@ -113,6 +113,7 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
         # print("xxx",self.instance_sampling_weights)
         self.instance_sampling_weights /= self.instance_sampling_weights.sum()
         # print("yyy",self.instance_sampling_weights)
+
         # Precompute a mapping from ids to categories
         self.id2cat_name = {}
         for id, cat_name in zip(self.VALID_CLASS_IDS, self.CLASS_LABELS):

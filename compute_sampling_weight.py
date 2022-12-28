@@ -105,4 +105,4 @@ if __name__=="__main__":
     # create_instance_ply(data_root, data_path_train, output_path_train)
     # create_instance_ply(data_root, data_path_val, output_path_val)
     compute_instance_freq(data_root, data_path_all, output_path, 
-                          dump_head=True, dump_common=True, dump_tail=True)
+                          dump_head=False, dump_common=True, dump_tail=True)

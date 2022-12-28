@@ -188,6 +188,7 @@ class ScannetVoxelizationDataset(VoxelizationDataset):
             cat_path = instance_folder + sample_cat
             print(cat_path)
             print(os.listdir(cat_path))
+            print(random.choice(os.listdir(cat_path)))
             file = cat_path + '/' + random.choice(os.listdir(cat_path))
             inst_coords, inst_feats, inst_labels, instance_ids, _ = self.load_ply_w_path(file, scene_name)
 

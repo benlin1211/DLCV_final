@@ -110,7 +110,7 @@ if __name__=="__main__":
                 # print(len(vote_box))
 
             p = voting(vote_box)
-            print(vote_box, "=>", p)
+            # print(vote_box, "=>", p)
             final_preds.append(p)
         final_pred_list.append(final_preds)
 

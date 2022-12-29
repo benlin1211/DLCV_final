@@ -5,17 +5,18 @@ export PYTHONUNBUFFERED="True"
 export DATASET=Scannet200Voxelization2cmDataset
 
 export MODEL=$1  #Res16UNet34C, Res16UNet34D
+# echo $MODEL
 export BATCH_SIZE=$2
 export SUFFIX=$3
 export ARGS=$4
+# echo $ARGS
 
-export WEIGHTS_SUFFIX=$5
+export DATA_ROOT=$5 #"./scannet_200"
+# echo $DATA_ROOT
+export PRETRAINED_WEIGHTS="./pre_train/pretrain.ckpt"
+# export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"
 
-# export DATA_ROOT=$6
-# export TRAIN_TXT=$7
-export DATA_ROOT="./scannet_200"
-# export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
-export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"
+export TXT_INPUT=$6
 export OUTPUT_DIR_ROOT="./output"
 
 export TIME=$(date +"%Y-%m-%d_%H-%M-%S")
@@ -47,8 +48,8 @@ python -m main \
 
 # sample_tail+weighted_ce
 # source scripts/train_models_sample_tail.sh Res16UNet34C 4 sample_tail --seed=1211 \
-# "./final-project-challenge-2-peiyuanwu/scannet_200"  \
-# . 
+# "./scannet_200"  \
+# "./scannet_200/train.txt" 
 
 # NO --instance_augmentation=raw ? multi-target not supported at /opt/conda/conda-bld/pytorch_1623448278899/work/aten/src/THCUNN/generic/ClassNLLCriterion.cu:15
 # --sample_tail_instances True \ V

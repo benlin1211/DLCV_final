@@ -9,11 +9,12 @@ export BATCH_SIZE=$2
 export SUFFIX=$3
 export ARGS=$4
 
-export WEIGHTS_SUFFIX=$5
-
-# export DATA_ROOT=$6
+export DATA_ROOT=$5 #"./scannet_200"
 # export TRAIN_TXT=$7
-export DATA_ROOT="./scannet_200"
+# export DATA_ROOT="./scannet_200"
+export TXT_INPUT=$6
+mv TXT_INPUT DATA_ROOT
+
 # export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
 export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"
 export OUTPUT_DIR_ROOT="./output"
@@ -55,9 +56,9 @@ python -m main \
 
 
 # cd ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval
-# zip submit_250.zip *.txt
-# cp ./submit_250.zip ../../../../../..
-# rm -rf ./submit_250.zip
+# zip submit_final.zip *.txt
+# cp ./submit_final.zip ../..
+# rm -rf ./submit_final.zip
 # cd ../../../../..
 
 # scp ./submit.zip pywu@140.112.18.221:/home/pywu/zhongwei/

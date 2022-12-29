@@ -51,8 +51,8 @@ command to cuild the whole environment.
 ## Inference 
 
 ```sh
-bash train.sh <Path to train_data folder> <Path to train.txt folder> 
-bash inference.sh <Path to test_data folder> <Path to test.txt folder> <Path to output .txt file>
+bash train.sh <Path to the folder containing the train_data folder> <Path to the folder containing "train.txt"> 
+bash inference.sh <Path to the folder containing the test_data folder> <Path to the folder containing "test.txt"> <Path to output .txt file>
 ```
 
 
@@ -62,44 +62,28 @@ bash inference.sh <Path to test_data folder> <Path to test.txt folder> <Path to 
 #### Data preprocess
 Please create instances ply files before your training by running:
 
-``` 
+```python 
 python get_train_instances.py
 ``` 
 
 You can check if you have all the feature data in feature data by running:
 
-``` 
+```python 
 python pkl_info.py
 ``` 
 
 You can split your valid data by running this code. This will select the scene with tail class for validation. (but it is still in train)
 
-``` 
+```python 
 python select_tail_as_valid.py
 ``` 
 
 You can generate your own class occurance frequency by running:
 
-``` 
+```python 
 python compute_freq.py
 ``` 
-
-#### Pretraining Command
-
-```sh
-  source 
-```
-
-#### Downstream Task Finetuning Command
-
-```sh
-  source
-```
 
 ## Reference
 
  - [LanguageGroundedSemseg](https://github.com/RozDavid/LanguageGroundedSemseg)
-
-## Authors
-
-- []()

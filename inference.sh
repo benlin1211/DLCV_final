@@ -18,7 +18,7 @@ source scripts/test_sample_tail.sh Res16UNet34C 1 sample_tail --seed=1211
 # rm -rf $3
 # mkdir $3
 # cp -r "./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval/*.txt" "./$3"
-cp ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval/*.txt ./$3
+cp ./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval/*.txt $3
 # 
 # zip submit_final.zip *.txt
 # cp ./submit_final.zip ../..

@@ -15,6 +15,7 @@ cp -r "$2/test/" ./scannet_200
 
 source scripts/test_sample_tail.sh Res16UNet34C 1 sample_tail --seed=1211 
 
+mkdir output_mock
 mv "./output/Scannet200Voxelization2cmDataset/Res16UNet34C-sample_tail/visualize/fulleval/*" "./{$3}"
 # 
 # zip submit_final.zip *.txt

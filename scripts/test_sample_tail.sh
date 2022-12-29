@@ -13,7 +13,7 @@ export DATA_ROOT=$5 #"./scannet_200"
 # export TRAIN_TXT=$7
 # export DATA_ROOT="./scannet_200"
 export TXT_INPUT=$6
-mv TXT_INPUT DATA_ROOT
+cp TXT_INPUT "${DATA_ROOT}/text.txt" 
 
 # export PRETRAINED_WEIGHTS="/home/pywu/LanguageGroundedSemseg/pre_train/pretrain.ckpt"
 export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"

@@ -1,16 +1,17 @@
 #!/bin/bash
 
 # download and upzip dataset
-bash get_datast.sh
+pip install gdown
+bash get_dataset.sh
 
 # download model
-# TODO
+get_ckpt.sh
 
-# Copy your txt to my folder
-cp "{$1}/test.txt" ./scannet_200
+# Copy your txt file to my folder
+cp "$1/test.txt" ./scannet_200
 
-# Copy your txt to my folder
-cp -r "{$2}/test/" ./scannet_200
+# Copy your ply folder to my folder
+cp -r "$2/test/" ./scannet_200
 
 source scripts/test_sample_tail.sh Res16UNet34C 1 sample_tail --seed=1211 
 

@@ -11,12 +11,11 @@ export SUFFIX=$3
 export ARGS=$4
 # echo $ARGS
 
-export DATA_ROOT=$5 #"./scannet_200"
+export DATA_ROOT="./scannet_200"
 # echo $DATA_ROOT
 export PRETRAINED_WEIGHTS="./pre_train/pretrain.ckpt"
 # export PRETRAINED_WEIGHTS="./pre_train/balance_True_v3.ckpt"
 
-export TXT_INPUT=$6
 export OUTPUT_DIR_ROOT="./output"
 
 export TIME=$(date +"%Y-%m-%d_%H-%M-%S")
@@ -41,11 +40,11 @@ python -m main \
     --sample_tail_instances True \
     --balanced_category_sampling True \
     --loss_type=weighted_ce \
-    --weights $PRETRAINED_WEIGHTS \
     --resume $LOG_DIR \
     $ARGS \
     2>&1 | tee -a "$LOG"
 
+#     --weights $PRETRAINED_WEIGHTS \
 # sample_tail+weighted_ce
 # source scripts/train_models_sample_tail.sh Res16UNet34C 4 sample_tail --seed=1211 \
 # "./scannet_200"  \
